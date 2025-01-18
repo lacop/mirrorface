@@ -33,10 +33,16 @@ MIRRORFACE_LOCAL_DIRECTORY=/tmp/mirrorface \
 uv run python -m gunicorn -c src/mirrorface/server/gunicorn.conf.py mirrorface.server.main:app
 ```
 
-Run the tests and static checks:
+Run the unit tests and static checks:
 
 ```shell
 uv run pytest
 
 uv run pyright
+```
+
+Run integration tests (requires Docker):
+
+```shell
+uv run integration_tests
 ```

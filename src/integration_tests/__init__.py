@@ -130,6 +130,22 @@ def run():
         assert exit_code == 0, "Test client failed"
         assert logs[-1] == "MIRRORFACE-TEST-CLIENT:PASS"
 
+    # Make sure the HF_ENDPOINT environment variable is respected.
+    # If we point to proxy that isn't running the client should fail.
+    with test_step("Run with invalid HF_ENDPOINT"):
+        logs, exit_code = run_test_client(
+            docker_client,
+            test_client_image,
+            environment={"HF_ENDPOINT": "http://localhost:1234"},
+        )
+        assert exit_code != 0, "Test client should have failed"
+        assert any("Connection refused" in log for log in logs), (
+            "Test client should have failed due to connection refused"
+        )
+        assert not any("MIRRORFACE-TEST-CLIENT:PASS" in log for log in logs), (
+            "Test client should not have passed"
+        )
+
     # Next run with internal network, the client must fail. This ensures
     # it doesn't always trivially pass and that there isn't any state leak.
     with test_step("Run in internal network"):
@@ -139,7 +155,7 @@ def run():
             )
         assert exit_code != 0, "Test client should have failed"
         assert any("Failed to resolve" in log for log in logs), (
-            "Test client should have failed due to connection refused"
+            "Test client should have failed due to network error"
         )
         assert not any("MIRRORFACE-TEST-CLIENT:PASS" in log for log in logs), (
             "Test client should not have passed"
