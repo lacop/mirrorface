@@ -31,3 +31,9 @@ Run the server:
 ```shell
 uv run python -m gunicorn -c src/mirrorface/server/gunicorn.conf.py mirrorface.server.main:app
 ```
+
+Run the tests:
+
+```shell
+uv run pytest
+```
