@@ -29,6 +29,7 @@ TODO
 Run the server:
 
 ```shell
+MIRRORFACE_LOCAL_DIRECTORY=/tmp/mirrorface \
 uv run python -m gunicorn -c src/mirrorface/server/gunicorn.conf.py mirrorface.server.main:app
 ```
 
