@@ -1,0 +1,7 @@
+[project]
+name = "mirrorface"
+version = "0.1.0"
+description = "Proxy for HuggingFace Hub"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
