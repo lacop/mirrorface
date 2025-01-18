@@ -1,0 +1,27 @@
+- integration test with server+client, proxy mode
+  - two networks, get client talking to server
+  - validate server is proxying requests
+  - graceful shutdown of server
+
+- storage / manifests structs and library/tests
+- CLI tool to download to local dir (no GCS yet)
+
+- serving from local dir/manifests
+- integration test with server+client, local mode
+  - download first into local dir
+  - server has no network
+  - client still works
+
+- create some dummy model files that can be loaded with transofmers lib?
+  - simpler testing, can point to that one instead of real model
+
+- GCS upload option in the CLI tool
+
+- (maybe) unit tests for the serving code?
+
+- helm chart
+- deploy to GKE autopilot cluster to test the fuse gcs csi thing, performance tuning etc
+- some benchmarking on huge model on real GKE pod
+
+- implement metrics
+- structured logging output
