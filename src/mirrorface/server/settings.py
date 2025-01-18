@@ -12,5 +12,8 @@ class Settings(BaseSettings):
     # Path to local directory where mirrored repositories are stored.
     local_directory: str
 
+    # Chunk size for transparent proxying.
+    chunk_size: int = 8 * 1024 * 1024
+
 
 settings = Settings()  # pyright: ignore[reportCallIssue], pydantic-settings will initialize or throw

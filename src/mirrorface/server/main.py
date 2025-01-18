@@ -7,7 +7,7 @@ from starlette.responses import PlainTextResponse
 
 from mirrorface.common.hub import RepositoryRevisionPath
 from mirrorface.server import metrics
-from mirrorface.server.handlers import try_serve_locally
+from mirrorface.server.handlers import proxy_request_upstream, try_serve_locally
 from mirrorface.server.settings import settings
 
 
@@ -55,6 +55,10 @@ async def mirror(request):
     upstream_path = urllib.parse.urljoin(settings.upstream_url, path)
     metrics.fallback_requests_inc(repository_revision_path)
     logging.info(f"Fallback to upstream: {upstream_path}")
-
-    # TODO: Implement.
-    return PlainTextResponse("Fallback to upstream", status_code=200)
+    print(request.headers)
+    return await proxy_request_upstream(
+        repository_revision_path,
+        upstream_path,
+        is_head=request.method == "HEAD",
+        request_headers=request.headers.items(),
+    )
