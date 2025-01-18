@@ -32,8 +32,10 @@ Run the server:
 uv run python -m gunicorn -c src/mirrorface/server/gunicorn.conf.py mirrorface.server.main:app
 ```
 
-Run the tests:
+Run the tests and static checks:
 
 ```shell
 uv run pytest
+
+uv run pyright
 ```
