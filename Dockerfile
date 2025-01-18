@@ -13,10 +13,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev --no-install-project
 
-ADD . /app/
+ADD src/mirrorface /app/src/mirrorface
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev
 
-ENTRYPOINT ["/app/.venv/bin/gunicorn", "-c", "/app/src/mirrorface/server/gunicorn.conf.py", "mirrorface.server.main:app"]
+ADD src/mirrorface/server/gunicorn.conf.py /app/gunicorn.conf.py
+ENTRYPOINT ["/app/.venv/bin/gunicorn", "-c", "/app/gunicorn.conf.py", "mirrorface.server.main:app"]
