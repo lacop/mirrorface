@@ -55,7 +55,7 @@ async def mirror(request):
     upstream_path = urllib.parse.urljoin(settings.upstream_url, path)
     metrics.fallback_requests_inc(repository_revision_path)
     logging.info(f"Fallback to upstream: {upstream_path}")
-    print(request.headers)
+
     return await proxy_request_upstream(
         repository_revision_path,
         upstream_path,

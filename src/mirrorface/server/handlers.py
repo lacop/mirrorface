@@ -2,14 +2,27 @@ import logging
 from typing import List, Optional, Set, Tuple
 
 import aiohttp
+import multidict
 from starlette.responses import PlainTextResponse, Response, StreamingResponse
 
 from mirrorface.common.hub import RepositoryRevisionPath
 from mirrorface.server import metrics
 from mirrorface.server.settings import settings
 
-REQUEST_HEADERS_TO_FORWARD = set()  # TODO: Add headers to forward
-RESPONSE_HEADERS_TO_FORWARD = set()  # TODO: Add headers to forward
+REQUEST_HEADERS_TO_FORWARD = set(
+    [
+        # TODO: Add headers to forward.
+    ]
+)
+RESPONSE_HEADERS_TO_FORWARD = set(
+    [
+        "content-disposition",
+        "content-length",
+        "content-type",
+        "etag",
+        "x-repo-commit",
+    ]
+)
 
 
 def filtered_headers(headers, headers_to_forward: Set[str]) -> List[Tuple[str, str]]:
@@ -28,6 +41,9 @@ async def stream_response(
         yield chunk
         total_size += len(chunk)
     metrics.fallback_total_bytes_inc(repository_revision_path, total_size)
+    logging.info(
+        f"Upstream response OK for {repository_revision_path}, {total_size} bytes"
+    )
     await session.close()
 
 
@@ -49,10 +65,19 @@ async def proxy_request_upstream(
         "HEAD" if is_head else "GET",
         upstream_path,
         headers=filtered_headers(request_headers, REQUEST_HEADERS_TO_FORWARD),
+        allow_redirects=True,
     )
 
+    # Large model files are stored on CDN and HF Hub will serve a redirect for them,
+    # but the CDN response is missing important headers the client expects. Combine
+    # all the seen headers (in reverse order, latest value wins).
+    combined_response_headers = multidict.CIMultiDict()
+    for redirect in response.history[::-1]:
+        combined_response_headers.update(redirect.headers)
+    combined_response_headers.update(response.headers)
+
     response_headers = dict(
-        filtered_headers(response.headers.items(), RESPONSE_HEADERS_TO_FORWARD)
+        filtered_headers(combined_response_headers.items(), RESPONSE_HEADERS_TO_FORWARD)
     )
 
     if response.status != 200:
@@ -68,5 +93,6 @@ async def proxy_request_upstream(
 
     return StreamingResponse(
         stream_response(repository_revision_path, session, response),
+        # status_code=200,
         headers=response_headers,
     )
