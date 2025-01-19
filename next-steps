@@ -1,26 +1,20 @@
-- integration test with server+client, proxy mode
-  - two networks, get client talking to server
-  - validate server is proxying requests
-  - graceful shutdown of server
+Important:
+  - helm chart
+  - deploy to GKE autopilot cluster to test the fuse gcs csi thing, performance tuning etc
+  - some benchmarking on huge model on real GKE pod
+  - implement metrics
+  - structured logging output
+  - github CI:
+      - docker+helm build and push GCR
+      - run pyright, pytest, integration tests
+      - run precommit lints
 
-- integration test with server+client, local mode
-  - download first into local dir
-  - server has no network
-  - client still works
-
-- create some dummy model files that can be loaded with transofmers lib?
-  - simpler testing, can point to that one instead of real model
-
-- (maybe) unit tests for the serving code?
-
-- helm chart
-- deploy to GKE autopilot cluster to test the fuse gcs csi thing, performance tuning etc
-- some benchmarking on huge model on real GKE pod
-
-- implement metrics
-- structured logging output
-
-- github CI:
-  - docker+helm build and push GCR
-  - run pyright, pytest, integration tests
-  - run precommit lints
+Nice to have / low priority:
+  - Integration test improvements
+    - Health check endpoint to avoid time.sleep in the test
+    - Stream logs from mirrorface while it runs (background thread)
+    - Graceful shutdown of mirrorface
+    - Code cleanups, it's bit hacky
+    - create some dummy model files that can be loaded with transofmers lib? (simpler testing, can point to that one instead of real model)
+  - (maybe) unit tests for the serving code?
+  - running "mirror" without repo install using `uvx --from github... mirror` ?
