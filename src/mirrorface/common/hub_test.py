@@ -33,3 +33,22 @@ def test_path_parsing():
         RepositoryRevisionPath.from_url_path("user/repo/not-resolve/branch/path")
         is None
     )
+
+
+def test_path_safe_string():
+    assert (
+        RepositoryRevision(repository="user/repo", revision="main").path_safe_string()
+        == "user--repo__main"
+    )
+    assert (
+        RepositoryRevision(
+            repository="user/repo", revision="some/branch"
+        ).path_safe_string()
+        == "user--repo__some--branch"
+    )
+    assert (
+        RepositoryRevision(
+            repository="user--with--dashes/repo", revision="main"
+        ).path_safe_string()
+        is None
+    )

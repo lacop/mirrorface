@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from pydantic import BaseModel
@@ -8,6 +9,18 @@ class RepositoryRevision(BaseModel):
 
     repository: str
     revision: str
+
+    def path_safe_string(self) -> Optional[str]:
+        # Note: We could allow "--" in repository or revision if needed, would
+        # just need to escape those somehow to avoid collisions.
+        if "--" in self.repository or "--" in self.revision:
+            logging.warning(
+                f"Unexpected repository or revision: {self.repository}, {self.revision}"
+            )
+            return None
+        repository = self.repository.replace("/", "--")
+        revision = self.revision.replace("/", "--")
+        return f"{repository}__{revision}"
 
 
 class RepositoryRevisionPath(BaseModel):
