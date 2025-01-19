@@ -20,10 +20,12 @@ To download a repository run the `mirror` command:
 uv run mirror \
   --repository "username/repository" \
   --revision "main" \
-  --local_directory /tmp/mirrorface
+  --gcs_bucket "my-mirrorface-bucket"
 ```
 
 Set `revision` to a branch, tag, or commit hash, or skip it (defaults to `main`).
+
+Must have `gcloud` CLI tool installed and authenticated so it can write to the provided `gcs_bucket`.
 
 ## Deployment
 
@@ -40,6 +42,12 @@ Run the server:
 ```shell
 MIRRORFACE_LOCAL_DIRECTORY=/tmp/mirrorface \
 uv run python -m gunicorn -c src/mirrorface/server/gunicorn.conf.py mirrorface.server.main:app
+```
+
+Download models locally:
+
+```shell
+uv run mirror --repository "username/repository" --local_directory /tmp/mirrorface
 ```
 
 Run the unit tests and static checks:
