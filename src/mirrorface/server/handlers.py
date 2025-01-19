@@ -3,9 +3,15 @@ from typing import List, Optional, Set, Tuple
 
 import aiohttp
 import multidict
-from starlette.responses import PlainTextResponse, Response, StreamingResponse
+from starlette.responses import (
+    FileResponse,
+    PlainTextResponse,
+    Response,
+    StreamingResponse,
+)
 
 from mirrorface.common.hub import RepositoryRevisionPath
+from mirrorface.common.storage import blob_path, load_full_manifest
 from mirrorface.server import metrics
 from mirrorface.server.settings import settings
 
@@ -50,8 +56,38 @@ async def stream_response(
 async def try_serve_locally(
     repository_revision_path: RepositoryRevisionPath,
 ) -> Optional[Response]:
-    # TODO: not implemented yet
-    return None
+    manifest = load_full_manifest(
+        settings.local_directory, repository_revision_path.repository_revision
+    )
+    if not manifest:
+        return None
+
+    blob_hash = manifest.files.get(repository_revision_path.path)
+    if not blob_hash:
+        # File is not in the repository manifest.
+        # This is expected, the client tries various paths without knowing
+        # if they are in the repo.
+        logging.info(
+            f"File {repository_revision_path.path} not in manifest, returning 404"
+        )
+        return PlainTextResponse("File not found", status_code=404)
+
+    logging.info(f"Serving {repository_revision_path} from local storage {blob_hash}")
+    blob_file_path = blob_path(settings.local_directory, blob_hash)
+    return FileResponse(
+        blob_file_path,
+        headers={
+            # Note: not always the right content type but we have to return
+            # something (client expects it), and this seems to work so far.
+            "Content-Type": "application/octet-stream",
+            # This isn't the request revision (could be eg "main") but the actual
+            # resolved commit hash from the manifest.
+            "X-Repo-Commit": manifest.revision_hash,
+            # Not strictly necessary but otherwise the download progress
+            # shows filenames differently than when not using the proxy.
+            "Content-Disposition": f'inline; filename="{repository_revision_path.path}";',
+        },
+    )
 
 
 async def proxy_request_upstream(

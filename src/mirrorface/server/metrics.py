@@ -7,6 +7,10 @@ def total_requests_inc(repository_revision_path: RepositoryRevisionPath):
     pass
 
 
+def cache_hit_inc(repository_revision_path: RepositoryRevisionPath):
+    pass
+
+
 def cache_miss_inc(repository_revision_path: RepositoryRevisionPath):
     pass
 

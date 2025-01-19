@@ -40,6 +40,7 @@ async def mirror(request):
     try:
         response = await try_serve_locally(repository_revision_path)
         if response is not None:
+            metrics.cache_hit_inc(repository_revision_path)
             return response
         metrics.cache_miss_inc(repository_revision_path)
         logging.info(f"Cache miss for {repository_revision_path}")
