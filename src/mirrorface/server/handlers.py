@@ -17,7 +17,8 @@ from mirrorface.server.settings import settings
 
 REQUEST_HEADERS_TO_FORWARD = set(
     [
-        # TODO: Add headers to forward.
+        "user-agent",
+        # TODO: Auth headers for private HF Hub repositories.
     ]
 )
 RESPONSE_HEADERS_TO_FORWARD = set(
