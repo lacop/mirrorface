@@ -76,4 +76,4 @@ spec:
             # https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-storage-fuse-csi-driver-perf#parallel-download
             volumeAttributes:
               bucketName: {{ required "bucketName is required" .Values.bucketName }}
-              mountOptions: "implicit-dirs"
+              mountOptions: "implicit-dirs,file-cache:enable-parallel-downloads:true"
