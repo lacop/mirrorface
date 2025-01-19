@@ -87,3 +87,12 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Build and publish Helm chart
+        run: |
+          helm registry login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
+          helm package helm --version ${{ steps.meta.outputs.version }}
+          helm push mirrorface-server.*.tgz oci://ghcr.io/${{ github.repository }}-chart
