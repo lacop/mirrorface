@@ -30,6 +30,11 @@ target-version = "py312"
 [tool.ruff.lint]
 extend-select = ["I"]
 
+[tool.pyright]
+include = ["src"]
+# test_client is not executed in current uv venv, can't check it.
+exclude = ["src/integration_tests/test_client/"]
+
 [dependency-groups]
 dev = [
     "docker>=7.1.0",
