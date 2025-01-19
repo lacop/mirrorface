@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}-app
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-app
+  template:
+    metadata:
+      annotations:
+        gke-gcsfuse/volumes: "true"
+      labels:
+        app: {{ .Release.Name }}-app
+
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+
+          # If image is set explicitly use that.
+          {{- if .Values.image }}
+          image: {{ .Values.image }}
+          {{- else }}
+          image: ghcr.io/lacop/mirrorface:{{ .Chart.Version }}
+          {{- end }}
+
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 9000
+              name: metrics
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+
+          volumeMounts:
+            - name: metrics-dir
+              mountPath: /metrics
+            - name: mirrorface-storage
+              mountPath: /mirrorface-storage
+              readOnly: true
+
+          resources:
+            limits:
+              memory: {{ .Values.memory }}
+            requests:
+              cpu: {{ .Values.cpu }}
+              memory: {{ .Values.memory }}
+
+          env:
+            - name: MIRRORFACE_LOCAL_DIRECTORY
+              value: /mirrorface-storage
+            - name: PROMETHEUS_MULTIPROC_DIR
+              value: /metrics
+            - name: PROMETHEUS_MULTIPROC_PORT
+              value: "9000"
+
+      serviceAccountName: {{ .Release.Name }}
+
+      volumes:
+        - name: metrics-dir
+          emptyDir: {}
+        - name: mirrorface-storage
+          csi:
+            driver: gcsfuse.csi.storage.gke.io
+            # TODO: Probably want some performance tuning options such as using
+            # local ssd for caching etc. Expose those via values.yaml.
+            # https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-storage-fuse-csi-driver-sidecar#configure-sidecar-resources
+            # https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-storage-fuse-csi-driver-perf#parallel-download
+            volumeAttributes:
+              bucketName: {{ required "bucketName is required" .Values.bucketName }}
+              mountOptions: "implicit-dirs"
