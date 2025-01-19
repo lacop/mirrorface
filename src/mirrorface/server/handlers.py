@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Optional, Set, Tuple
 
 import aiohttp
@@ -73,8 +74,12 @@ async def try_serve_locally(
         )
         return PlainTextResponse("File not found", status_code=404)
 
-    logging.info(f"Serving {repository_revision_path} from local storage {blob_hash}")
     blob_file_path = blob_path(settings.local_directory, blob_hash)
+    blob_size = os.path.getsize(blob_file_path)
+    logging.info(
+        f"Serving {repository_revision_path} from local storage {blob_hash}: {blob_size} bytes"
+    )
+    metrics.cache_total_bytes_inc(repository_revision_path, blob_size)
     return FileResponse(
         blob_file_path,
         headers={
