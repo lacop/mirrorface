@@ -20,10 +20,10 @@ HF_ENDPOINT=http://mirrorface-hostname:port/mirror python3 model.py
 
 ### Mirroring models
 
-To download a repository run the `mirror` command:
+To download a repository run the `mirror` command (must have [`uv`](https://docs.astral.sh/uv/) installed):
 
 ```shell
-uv run mirror \
+uvx --from git+https://github.com/lacop/mirrorface mirror \
   --repository "username/repository" \
   --revision "main" \
   --gcs_bucket "my-mirrorface-bucket"

@@ -1,13 +1,7 @@
 Important:
-  - helm chart
-  - deploy to GKE autopilot cluster to test the fuse gcs csi thing, performance tuning etc
-  - some benchmarking on huge model on real GKE pod
-  - implement metrics
   - structured logging output
-  - github CI:
-      - docker+helm build and push GCR
-      - run pyright, pytest, integration tests
-      - run precommit lints
+  - performance tuning and benchmarking, FUSE needs some options + larger local ephemeral cache for reads
+  - support for private / authenticated repos (forward credentials)
 
 Nice to have / low priority:
   - Integration test improvements
@@ -17,4 +11,3 @@ Nice to have / low priority:
     - Code cleanups, it's bit hacky
     - create some dummy model files that can be loaded with transofmers lib? (simpler testing, can point to that one instead of real model)
   - (maybe) unit tests for the serving code?
-  - running "mirror" without repo install using `uvx --from github... mirror` ?
