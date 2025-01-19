@@ -20,7 +20,15 @@ ADD src/mirrorface /app/src/mirrorface
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-dev
+    uv sync --frozen --no-dev && \
+    uv build
+RUN uv pip install dist/mirrorface-*.whl
+
+# Note: There is probably a better way to do this so that we end up
+# with a minimal runtime image but uv to manage deps + build and then
+# pip to install and copying over the venv seems to work well enough.
+FROM python:3.12-alpine AS runtime
+COPY --from=builder /app/.venv /app/.venv
 
 ADD src/mirrorface/server/gunicorn.conf.py /app/gunicorn.conf.py
 ENTRYPOINT ["/app/.venv/bin/gunicorn", "-c", "/app/gunicorn.conf.py", "mirrorface.server.main:app"]
