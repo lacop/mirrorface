@@ -14,7 +14,16 @@ TODO
 
 ### Mirroring models
 
-TODO
+To download a repository run the `mirror` command:
+
+```shell
+uv run mirror \
+  --repository "username/repository" \
+  --revision "main" \
+  --local_directory /tmp/mirrorface
+```
+
+Set `revision` to a branch, tag, or commit hash, or skip it (defaults to `main`).
 
 ## Deployment
 
