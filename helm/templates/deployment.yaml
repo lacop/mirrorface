@@ -60,7 +60,7 @@ spec:
             - name: PROMETHEUS_MULTIPROC_PORT
               value: "9000"
             - name: GUNICORN_WORKERS
-              value: {{ .Values.workerCount }}
+              value: {{ .Values.workerCount | quote }}
 
       serviceAccountName: {{ .Release.Name }}
 
