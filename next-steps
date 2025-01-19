@@ -3,10 +3,6 @@
   - validate server is proxying requests
   - graceful shutdown of server
 
-- storage / manifests structs and library/tests
-- CLI tool to download to local dir (no GCS yet)
-
-- serving from local dir/manifests
 - integration test with server+client, local mode
   - download first into local dir
   - server has no network
@@ -25,3 +21,8 @@
 
 - implement metrics
 - structured logging output
+
+- github CI:
+  - docker+helm build and push GCR
+  - run pyright, pytest, integration tests
+  - run precommit lints
