@@ -1,6 +1,6 @@
 # MirrorFace 🪞 🤗
 
-`HF_ENDPOINT=http://mirrorface:port/mirror python3 model.py`
+`HF_ENDPOINT=http://mirrorface/mirror python3 model.py`
 
 Proxy for HuggingFace Hub which serves models from a local directory if available, and falls back to being a transparent proxy to the HuggingFace Hub otherwise.
 
@@ -10,7 +10,13 @@ Make your production ML deployments more robust, avoiding downtime when HuggingF
 
 ### Using the service
 
-TODO
+Supports code that load models via `huggingface-hub` library (including the `transofmers` library).
+
+Simply set the `HF_ENDPOINT` environment variable to point to your MirrorFace deployment.
+
+```shell
+HF_ENDPOINT=http://mirrorface-hostname:port/mirror python3 model.py
+```
 
 ### Mirroring models
 

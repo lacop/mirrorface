@@ -11,8 +11,6 @@
 - create some dummy model files that can be loaded with transofmers lib?
   - simpler testing, can point to that one instead of real model
 
-- GCS upload option in the CLI tool
-
 - (maybe) unit tests for the serving code?
 
 - helm chart
