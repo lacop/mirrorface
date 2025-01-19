@@ -122,3 +122,58 @@ def load_full_manifest(
             f"Full manifest points to invalid revision: {manifest.manifest.revision_hash}"
         )
     return manifest.manifest
+
+
+def move_local_blobs(local_snapshot: str, local_directory: str) -> dict[str, str]:
+    # Move all files into local_directory/blobs/hash and return a mapping from original path to the hash.
+    file_hashes = {}
+    os.makedirs(
+        os.path.dirname(blob_path(local_directory, "")),
+        exist_ok=True,
+    )
+    for root, _, files in os.walk(local_snapshot):
+        for file in files:
+            file_path = os.path.join(root, file)
+            relative_path = os.path.relpath(file_path, local_snapshot)
+
+            # This has timestamps / changes on every run, and is not needed, just skip it
+            # so we don't have to re-upload and overwrite manifests each time.
+            print(relative_path)
+            if relative_path.startswith(".cache/huggingface/"):
+                continue
+
+            file_hash = get_file_hash(file_path)
+            blob_file_path = blob_path(local_directory, file_hash)
+            if not os.path.exists(blob_file_path):
+                os.rename(file_path, blob_file_path)
+            file_hashes[relative_path] = file_hash
+    return file_hashes
+
+
+def write_local_manifests(
+    repository_revision: RepositoryRevision,
+    original_repository_revision: RepositoryRevision,
+    files: dict[str, str],
+    local_directory: str,
+):
+    # Full manifest.
+    manifest = FullManifest(revision_hash=repository_revision.revision, files=files)
+    full_manifest_path = manifest_path(local_directory, repository_revision)
+    if full_manifest_path is None:
+        raise ValueError(f"Invalid repository revision: {repository_revision}")
+    os.makedirs(os.path.dirname(full_manifest_path), exist_ok=True)
+    with open(full_manifest_path, "w") as f:
+        f.write(Manifest(manifest=manifest).model_dump_json())
+
+    if repository_revision.revision != original_repository_revision.revision:
+        # Redirect manifest.
+        redirect_manifest = RedirectManifest(revision_hash=repository_revision.revision)
+        redirect_manifest_path = manifest_path(
+            local_directory, original_repository_revision
+        )
+        if redirect_manifest_path is None:
+            raise ValueError(
+                f"Invalid original repository revision: {original_repository_revision}"
+            )
+        with open(redirect_manifest_path, "w") as f:
+            f.write(Manifest(manifest=redirect_manifest).model_dump_json())
