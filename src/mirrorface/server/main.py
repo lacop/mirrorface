@@ -24,6 +24,10 @@ app = Starlette(debug=True, lifespan=lifespan)
 @app.route("/mirror/{path:path}")
 async def mirror(request):
     path = request.path_params.get("path")
+    if path.startswith("/api/models/"):
+        # TODO: The client requests this path, works without it but we should
+        # figure out what that is used for and whether we need to support it.
+        return PlainTextResponse("Not implemented", status_code=404)
     repository_revision_path = RepositoryRevisionPath.from_url_path(path)
 
     if repository_revision_path is None:
