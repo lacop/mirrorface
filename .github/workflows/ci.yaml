@@ -95,4 +95,4 @@ jobs:
         run: |
           helm registry login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
           helm package helm --version ${{ steps.meta.outputs.version }}
-          helm push mirrorface-server.*.tgz oci://ghcr.io/${{ github.repository }}-chart
+          helm push mirrorface-server-*.tgz oci://ghcr.io/${{ github.repository }}-chart
