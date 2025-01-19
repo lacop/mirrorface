@@ -21,6 +21,11 @@ async def lifespan(app):
 app = Starlette(debug=True, lifespan=lifespan)
 
 
+@app.route("/health")
+async def health(request):
+    return PlainTextResponse("OK")
+
+
 @app.route("/mirror/{path:path}")
 async def mirror(request):
     path = request.path_params.get("path")
