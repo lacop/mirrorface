@@ -13,6 +13,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev --no-install-project
 
+# uv wants the readme to exist to install, but don't bother
+# copying it, no reason to invalidate cache when it changes.
+RUN touch /app/README.md
 ADD src/mirrorface /app/src/mirrorface
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
