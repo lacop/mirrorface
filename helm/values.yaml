@@ -1,10 +1,13 @@
-cpu: 2
-memory: 4Gi
+# Number of service replicas.
 replicas: 1
+# CPU and memory requests for the container.
+cpu: 4
+memory: 8Gi
+# Number of gunicorn worker processes.
+# Should be around 2-4x number of cores.
+workerCount: 8
 # Required: GCS bucket name where models are mirrored.
 # bucketName: your-bucket-name
-
+#
 # Optional: Docker image to use.
 # image: ghcr.io/lacop/mirorface:1.2.3
-
-# TODO: worker count? Should be changed together with cpu/memory.

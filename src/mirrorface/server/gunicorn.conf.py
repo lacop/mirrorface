@@ -7,9 +7,7 @@ worker_class = "uvicorn.workers.UvicornWorker"
 
 bind = "0.0.0.0:8000"
 
-# TODO: Options from env vars?
-#   - worker count
-#   - bind address/port
+workers = int(os.getenv("GUNICORN_WORKERS", 4))
 
 
 # Prometheus multiprocess mode is pretty crap, need this to make it work.
