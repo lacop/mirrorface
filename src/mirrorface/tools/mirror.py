@@ -142,9 +142,7 @@ def upload_to_gcs(
     print("GCS upload complete!")
 
 
-def main():
-    settings = Settings()  # pyright: ignore[reportCallIssue], pydantic-settings will initialize or throw
-
+def main(settings: Settings):
     original_repository_revision = RepositoryRevision(
         repository=settings.repository, revision=settings.revision
     )
@@ -173,4 +171,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    settings = Settings()  # pyright: ignore[reportCallIssue], pydantic-settings will initialize or throw
+    main(settings)
