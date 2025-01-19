@@ -11,7 +11,11 @@ from integration_tests.docker_utils import (
     test_network_internal,
     test_network_open,
 )
-from integration_tests.test_utils import integration_tests_dir, repo_root_dir, test_step
+from integration_tests.runner_utils import (
+    integration_tests_dir,
+    repo_root_dir,
+    test_step,
+)
 from mirrorface.tools.mirror import Settings as MirrorSettings
 from mirrorface.tools.mirror import main as mirror_main
 
