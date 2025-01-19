@@ -170,6 +170,10 @@ def main(settings: Settings):
         )
 
 
-if __name__ == "__main__":
+def main_cli():
     settings = Settings()  # pyright: ignore[reportCallIssue], pydantic-settings will initialize or throw
     main(settings)
+
+
+if __name__ == "__main__":
+    main_cli()
