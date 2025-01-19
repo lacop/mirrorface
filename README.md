@@ -35,11 +35,27 @@ Must have `gcloud` CLI tool installed and authenticated so it can write to the p
 
 ## Deployment
 
-TODO
+Helm chart is available at `ghcr.io/lacop/mirrorface-server`. Use it with your favorite gitops tool, or if you like to YOLO things:
+
+```shell
+helm template \
+  <mirrorface-deployment-name-here> \
+  oci://ghcr.io/lacop/mirrorface-server:<version-here> \
+  --set bucketName=<your-mirrorface-bucket> \
+  | kubectl apply -f -
+```
+
+You can also run the Docker package `ghcr.io/lacop/mirrorface` directly. Just provide the `MIRRORFACE_LOCAL_DIRECTORY` environment variable.
 
 ## Architecture
 
-TODO
+MirrorFace server hosts an `/mirror` endpoint that can be used as drop-in replacement for the upstream HuggingFace Hub using `HF_ENDPOINT` environment variable. It checks if the requested model is available locally and will serve it from there, otherwise it will proxy the request to the upstream HuggingFace Hub.
+
+By itself it will not mirror anything, the local directory is read-only. To mirror models to the local directory use the `mirror` command.
+
+The MirrorFace server can only read from local filesystem. In production deployments this should be a GCS bucket mounted through GCS FUSE CSI driver (the provided Helm chart does this).
+
+There are metrics and logs for monitoring. You should monitor the cache misses and run `mirror` to download the missing models as needed.
 
 ## Local Development
 
